@@ -13,7 +13,7 @@ public class User
 
     private String name;
     private String password;
-    private final byte access; // Bitmask, that contain all access levels of User
+    private byte access; // Bitmask, that contain all access levels of User
 
     public User()
     {
