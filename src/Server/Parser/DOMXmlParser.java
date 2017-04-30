@@ -7,4 +7,6 @@ package Server.Parser;
 public abstract class DOMXmlParser<PatternType> extends XmlParser<PatternType>
 {
     public abstract void create(PatternType object) throws Exception;
+    public abstract void edit(PatternType object) throws Exception;
+    public abstract void delete(PatternType object);
 }
