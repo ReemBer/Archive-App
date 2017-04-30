@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="User">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Access" type="xs:byte"/>
+                <xs:element name="Password" type="xs:string"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
