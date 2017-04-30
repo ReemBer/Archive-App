@@ -163,13 +163,24 @@ public class UserParser extends DOMXmlParser<User>
         }
     }
 
+    /**
+     * Deleting old User XML File and creating new User XML File
+     * @param oldObject will be deleted
+     * @param newObject will be create
+     * @throws UserCreatingException cannot use the XML Creating Features
+     * @throws UserExistException such User already exist
+     */
     @Override
-    public void edit(User oldObject, User newObject) throws Exception
+    public void edit(User oldObject, User newObject) throws UserCreatingException, UserExistException
     {
         delete(oldObject);
         create(newObject);
     }
 
+    /**
+     * Deliting User XML File
+     * @param object User, whose XML File will be deleted
+     */
     @Override
     public void delete(User object)
     {
@@ -186,6 +197,13 @@ public class UserParser extends DOMXmlParser<User>
         }
     }
 
+    /**
+     * Checking File existing
+     * @param fileName checking file
+     * @return true, if such file exist
+     * @throws FileNotFoundException such file not found
+     * @throws NullPointerException fileName parameter is null pointer
+     */
     private boolean exist(String fileName) throws FileNotFoundException, NullPointerException
     {
         if(fileName == null) throw new NullPointerException();
@@ -199,6 +217,12 @@ public class UserParser extends DOMXmlParser<User>
         return true;
     }
 
+    /**
+     * Checking valid of XML file, by using XSD Schema
+     * @param xmlFile
+     * @throws SAXException file does not match XSD Schema
+     * @throws IOException some file error
+     */
     private void validate(String xmlFile) throws SAXException, IOException
     {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -208,11 +232,26 @@ public class UserParser extends DOMXmlParser<User>
         validator.validate(streamSource);
     }
 
+    /**
+     * generating file name, that correspond with such User
+     * @param user a User object for generating
+     * @return User XML File name
+     */
     private String userFileName(User user)
     {
         return prefix + user.getName() + suffix;
     }
 
+    /**
+     * Creating the User XML File and writing the User Document into this file
+     * @param document The User document, that will be written
+     * @param filePath path to the User XML File
+     * @throws TransformerFactoryConfigurationError
+     * @throws TransformerConfigurationException
+     * @throws FileNotFoundException
+     * @throws TransformerException
+     * @throws IOException
+     */
     private void writeDocument(Document document, final String filePath) throws TransformerFactoryConfigurationError,
                                                                                 TransformerConfigurationException,
                                                                                 FileNotFoundException,
