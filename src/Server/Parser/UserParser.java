@@ -38,49 +38,69 @@ public class UserParser extends DOMXmlParser<User>
      * Method, that parse the User XML File and returns the User object
      * @param xmlFile path to User XML File
      * @return User object
-     * @throws FileNotFoundException The User XML File not found
-     * @throws NullPointerException The String User XML File name is null
-     * @throws SAXException The User XML File is invalid (The file does not math the xsd schema)
-     * @throws IOException validator cannot check the User XML File
+     * @throws UserParsingException cannot use features, that provide parsing User XML File
+     * @throws IllegalUserXMLFormatException The User XML File does not match pattern
      */
     @Override
-    public User parse(String xmlFile) throws Exception
+    public User parse(String xmlFile) throws UserParsingException, IllegalUserXMLFormatException
     {
-        //existence check
-        exist(xmlFile);
-
-        //valid check
-        validate(xmlFile);
-
-        //parsing
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(xmlFile);
-        document.getDocumentElement().normalize();
-
-        //creating result
         User result = new User();
+        try
+        {
+            //existence check
+            exist(xmlFile); // throws FileNotFoundException
 
-        //get name
-        NodeList nameList = document.getElementsByTagName("Name");
-        Node nameNode = nameList.item(0);
-        String name = nameNode.getTextContent();
+            //valid check
+            validate(xmlFile);
 
-        //get Password
-        NodeList passwordList = document.getElementsByTagName("Password");
-        Node passwordNode = passwordList.item(0);
-        String password = passwordNode.getTextContent();
+            //parsing
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xmlFile);
+            document.getDocumentElement().normalize();
 
-        //get Access
-        NodeList accessList = document.getElementsByTagName("Access");
-        Node accessNode = accessList.item(0);
-        String accessContent = accessNode.getTextContent();
-        byte access = (byte) Integer.parseInt(accessContent);
+            //get name
+            NodeList nameList = document.getElementsByTagName("Name");
+            Node nameNode = nameList.item(0);
+            String name = nameNode.getTextContent();
 
+            //get Password
+            NodeList passwordList = document.getElementsByTagName("Password");
+            Node passwordNode = passwordList.item(0);
+            String password = passwordNode.getTextContent();
 
-        result.setName(name);
-        result.setPassword(password);
-        result.setAccess(access);
+            //get Access
+            NodeList accessList = document.getElementsByTagName("Access");
+            Node accessNode = accessList.item(0);
+            String accessContent = accessNode.getTextContent();
+            byte access = (byte) Integer.parseInt(accessContent);
+
+            result.setName(name);
+            result.setPassword(password);
+            result.setAccess(access);
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            throw new UserParsingException();
+        }
+        catch (NullPointerException ex)
+        {
+            ex.printStackTrace();
+            throw new UserParsingException();
+        }
+        catch (SAXException exc)
+        {
+            exc.printStackTrace();
+            throw new IllegalUserXMLFormatException();
+        }
+        catch (ParserConfigurationException excep)
+        {
+            excep.printStackTrace();
+            throw new UserParsingException();
+        }
+
 
         return result;
     }
