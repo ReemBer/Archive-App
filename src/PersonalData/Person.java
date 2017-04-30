@@ -5,7 +5,7 @@ package PersonalData;
  * @author ReemBer (GitHub)
  * This class is designed to create and store personal data
  */
-public class PersonalData
+public class Person
 {
     private static final String DEFAULT_STRING_VALUE = "NO DATA";
     private static final int DEFAULT_INTEGER_VALUE   = 0;
@@ -18,14 +18,14 @@ public class PersonalData
     private String  jobPlace;
     private int     experience;
 
-    public PersonalData()
+    public Person()
     {
         firstName = lastName = email = phoneNumber = jobPlace = DEFAULT_STRING_VALUE;
         address = new Address();
         experience = DEFAULT_INTEGER_VALUE;
     }
 
-    public PersonalData(String firstName, String lastName, String email, String phoneNumber, Address address, String jobPlace, int experience)
+    public Person(String firstName, String lastName, String email, String phoneNumber, Address address, String jobPlace, int experience)
     {
         this.firstName   = firstName;
         this.lastName    = lastName;
