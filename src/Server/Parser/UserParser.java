@@ -163,6 +163,29 @@ public class UserParser extends DOMXmlParser<User>
         }
     }
 
+    @Override
+    public void edit(User oldObject, User newObject) throws Exception
+    {
+        delete(oldObject);
+        create(newObject);
+    }
+
+    @Override
+    public void delete(User object)
+    {
+        try
+        {
+            exist(userFileName(object));
+
+            File del = new File(userFileName(object));
+            del.delete();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO: 30.04.2017 Добавить запись в лог о попытке удаления не существующего пользователя
+        }
+    }
+
     private boolean exist(String fileName) throws FileNotFoundException, NullPointerException
     {
         if(fileName == null) throw new NullPointerException();
