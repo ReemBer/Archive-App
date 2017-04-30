@@ -2,6 +2,7 @@ package Server.Parser;
 
 import User.User;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -9,12 +10,17 @@ import org.xml.sax.SAXException;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
@@ -25,6 +31,8 @@ import java.io.IOException;
 public class UserParser extends DOMXmlParser<User>
 {
     private static final String XSDSchema = "UserValidSchema.xsd";
+    private static final String prefix = "D:\\WORKSPACE\\Archive\\src\\Server\\Users\\";
+    private static final String suffix = ".xml";
 
     /**
      * Method, that parse the User XML File and returns the User object
@@ -77,13 +85,65 @@ public class UserParser extends DOMXmlParser<User>
         return result;
     }
 
+    /**
+     * Creating new User XML File
+     * @param object A User object, that will be writing in the XML file
+     * @throws UserExistException such User already exist
+     * @throws UserCreatingException cannot use the XML Creating Features
+     */
     @Override
-    public void create(User object) throws Exception
+    public void create(User object) throws UserExistException, UserCreatingException
     {
+        try
+        {
+            if(object == null) throw new NullPointerException();
 
+            //cannot create new user -- such user already exist
+            if(exist(userFileName(object))) throw new UserExistException();
+
+            //creating new xml document
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.newDocument();
+
+            //creating elements
+            Element user = document.createElement("User");
+            Element name = document.createElement("Name");
+            Element access = document.createElement("Access");
+            Element password = document.createElement("Password");
+
+            //creating document tree
+            user.appendChild(name);
+            user.appendChild(access);
+            user.appendChild(password);
+            document.appendChild(user);
+
+            //set content of file
+            name.setTextContent(object.getName());
+            access.setTextContent(Byte.toString(object.getAccess()));
+            password.setTextContent(object.getPassword());
+
+            //writing document into the file
+            writeDocument(document, userFileName(object));
+        }
+        catch (TransformerException e)
+        {
+            e.printStackTrace();
+            throw new UserCreatingException();
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+            throw new UserCreatingException();
+        }
+        catch (ParserConfigurationException exc)
+        {
+            exc.printStackTrace();
+            throw new UserCreatingException();
+        }
     }
 
-    private void exist(String fileName) throws FileNotFoundException, NullPointerException
+    private boolean exist(String fileName) throws FileNotFoundException, NullPointerException
     {
         if(fileName == null) throw new NullPointerException();
 
@@ -92,6 +152,8 @@ public class UserParser extends DOMXmlParser<User>
         {
             throw new FileNotFoundException();
         }
+
+        return true;
     }
 
     private void validate(String xmlFile) throws SAXException, IOException
@@ -101,5 +163,26 @@ public class UserParser extends DOMXmlParser<User>
         Validator validator = schema.newValidator();
         StreamSource streamSource = new StreamSource(xmlFile);
         validator.validate(streamSource);
+    }
+
+    private String userFileName(User user)
+    {
+        return prefix + user.getName() + suffix;
+    }
+
+    private void writeDocument(Document document, final String filePath) throws TransformerFactoryConfigurationError,
+                                                                                TransformerConfigurationException,
+                                                                                FileNotFoundException,
+                                                                                TransformerException,
+                                                                                IOException
+    {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        DOMSource source = new DOMSource(document);
+        File outfile = new File(filePath);
+        outfile.createNewFile();
+        FileOutputStream out = new FileOutputStream(outfile);
+
+        StreamResult result = new StreamResult(out);
+        transformer.transform(source, result);
     }
 }
