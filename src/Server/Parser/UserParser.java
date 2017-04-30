@@ -1,6 +1,7 @@
 package Server.Parser;
 
 import User.User;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,6 +34,8 @@ public class UserParser extends DOMXmlParser<User>
     private static final String XSDSchema = "UserValidSchema.xsd";
     private static final String prefix = "D:\\WORKSPACE\\Archive\\src\\Server\\Users\\";
     private static final String suffix = ".xml";
+
+    public static final Logger logger = Logger.getLogger(UserParser.class);
 
     /**
      * Method, that parse the User XML File and returns the User object
@@ -83,24 +86,27 @@ public class UserParser extends DOMXmlParser<User>
         catch (IOException e)
         {
             e.printStackTrace();
+            logger.fatal(e);
             throw new UserParsingException();
         }
         catch (NullPointerException ex)
         {
             ex.printStackTrace();
+            logger.fatal(ex);
             throw new UserParsingException();
         }
         catch (SAXException exc)
         {
             exc.printStackTrace();
+            logger.fatal(exc);
             throw new IllegalUserXMLFormatException();
         }
         catch (ParserConfigurationException excep)
         {
             excep.printStackTrace();
+            logger.fatal(excep);
             throw new UserParsingException();
         }
-
 
         return result;
     }
@@ -149,16 +155,19 @@ public class UserParser extends DOMXmlParser<User>
         catch (TransformerException e)
         {
             e.printStackTrace();
+            logger.fatal(e);
             throw new UserCreatingException();
         }
         catch (IOException ex)
         {
             ex.printStackTrace();
+            logger.fatal(ex);
             throw new UserCreatingException();
         }
         catch (ParserConfigurationException exc)
         {
             exc.printStackTrace();
+            logger.fatal(exc);
             throw new UserCreatingException();
         }
     }
