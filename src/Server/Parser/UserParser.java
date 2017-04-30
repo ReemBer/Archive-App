@@ -202,7 +202,7 @@ public class UserParser extends DOMXmlParser<User>
         }
         catch (FileNotFoundException e)
         {
-            // TODO: 30.04.2017 Добавить запись в лог о попытке удаления не существующего пользователя
+            logger.info("Trying to delete no existence file");
         }
     }
 
