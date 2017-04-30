@@ -8,5 +8,5 @@ package Server.Parser;
  */
 public abstract class XmlParser<PatternType>
 {
-    public abstract PatternType parse(String xmlFile);
+    public abstract PatternType parse(String xmlFile) throws Exception;
 }
