@@ -40,6 +40,11 @@ public class PersonDOMParser extends DOMXmlParser<Person>
 
     public  static final Logger logger = Logger.getLogger(PersonDOMParser.class);
 
+    public PersonDOMParser()
+    {
+        super(XSDSchema);
+    }
+
     /**
      * Method, that parse the Person XML File and returns the User object
      * @param xmlFile path to Person XML File
@@ -241,25 +246,10 @@ public class PersonDOMParser extends DOMXmlParser<Person>
         }
     }
 
-    /**
-     * Checking valid of XML file, by using XSD Schema
-     * @param xmlFile file, that will be validating
-     * @throws SAXException file does not match XSD Schema
-     * @throws IOException some file error
-     */
-    @Override
-    protected void validate(String xmlFile) throws SAXException, IOException
-    {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-        Schema schema = factory.newSchema(new StreamSource(XSDSchema));
-        Validator validator = schema.newValidator();
-        StreamSource streamSource = new StreamSource(xmlFile);
-        validator.validate(streamSource);
-    }
 
     /**
      * generating file name, that correspond with such Person
-     * @param user a Person object for generating
+     * @param person a Person object for generating
      * @return Person XML File name
      */
     private String personFileName(Person person)

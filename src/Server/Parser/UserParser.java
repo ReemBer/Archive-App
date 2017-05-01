@@ -37,6 +37,11 @@ public class UserParser extends DOMXmlParser<User>
 
     public static final Logger logger = Logger.getLogger(UserParser.class);
 
+    public UserParser()
+    {
+        super(XSDSchema);
+    }
+
     /**
      * Method, that parse the User XML File and returns the User object
      * @param xmlFile path to User XML File

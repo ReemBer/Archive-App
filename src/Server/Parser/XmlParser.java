@@ -1,7 +1,15 @@
 package Server.Parser;
 
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by Tarasevich Vladislav on 28.04.2017.
@@ -11,9 +19,29 @@ import java.io.FileNotFoundException;
  */
 public abstract class XmlParser<PatternType>
 {
+    private final String XSDSchema;
+
+    public XmlParser(String XSDSchema)
+    {
+        this.XSDSchema = XSDSchema;
+    }
+
     public abstract PatternType parse(String xmlFile) throws Exception;
 
-    protected void validate(String xmlFile) throws Exception{}
+    /**
+     * Checking valid of XML file, by using XSD Schema
+     * @param xmlFile
+     * @throws SAXException file does not match XSD Schema
+     * @throws IOException some file error
+     */
+    protected void validate(String xmlFile) throws SAXException, IOException
+    {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        Schema schema = factory.newSchema(new StreamSource(XSDSchema));
+        Validator validator = schema.newValidator();
+        StreamSource streamSource = new StreamSource(xmlFile);
+        validator.validate(streamSource);
+    }
 
     /**
      * Checking File existing
