@@ -107,13 +107,13 @@ public class PersonDOMParser extends DOMXmlParser<Person>
         {
             e.printStackTrace();
             logger.fatal(e);
-            throw new IllegalPersonXMLFormatException();
+            throw new IllegalPersonXMLFormatException(e);
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
             logger.fatal(ex);
-            throw new PersonParsingException();
+            throw new PersonParsingException(ex);
         }
 
 
@@ -196,13 +196,13 @@ public class PersonDOMParser extends DOMXmlParser<Person>
         }
         catch (PersonExistException e)
         {
-            throw new PersonExistException();
+            throw new PersonExistException(e);
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
             logger.fatal(ex);
-            throw new PersonCreatingException();
+            throw new PersonCreatingException(ex);
         }
     }
 
@@ -242,32 +242,13 @@ public class PersonDOMParser extends DOMXmlParser<Person>
     }
 
     /**
-     * Checking File existing
-     * @param fileName checking file
-     * @return true, if such file exist
-     * @throws FileNotFoundException such file not found
-     * @throws NullPointerException fileName parameter is null pointer
-     */
-    private boolean exist(String fileName) throws FileNotFoundException, NullPointerException
-    {
-        if(fileName == null) throw new NullPointerException();
-
-        File file = new File(fileName);
-        if(!file.exists())
-        {
-            throw new FileNotFoundException();
-        }
-
-        return true;
-    }
-
-    /**
      * Checking valid of XML file, by using XSD Schema
-     * @param xmlFile
+     * @param xmlFile file, that will be validating
      * @throws SAXException file does not match XSD Schema
      * @throws IOException some file error
      */
-    private void validate(String xmlFile) throws SAXException, IOException
+    @Override
+    protected void validate(String xmlFile) throws SAXException, IOException
     {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         Schema schema = factory.newSchema(new StreamSource(XSDSchema));

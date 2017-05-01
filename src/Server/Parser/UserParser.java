@@ -83,29 +83,17 @@ public class UserParser extends DOMXmlParser<User>
             result.setAccess(access);
 
         }
-        catch (IOException e)
+        catch (SAXException e)
         {
             e.printStackTrace();
             logger.fatal(e);
-            throw new UserParsingException();
+            throw new IllegalUserXMLFormatException(e);
         }
-        catch (NullPointerException ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
-            logger.fatal(ex);
-            throw new UserParsingException();
-        }
-        catch (SAXException exc)
-        {
-            exc.printStackTrace();
-            logger.fatal(exc);
-            throw new IllegalUserXMLFormatException();
-        }
-        catch (ParserConfigurationException excep)
-        {
-            excep.printStackTrace();
-            logger.fatal(excep);
-            throw new UserParsingException();
+            e.printStackTrace();
+            logger.fatal(e);
+            throw new UserParsingException(e);
         }
 
         return result;
@@ -152,23 +140,15 @@ public class UserParser extends DOMXmlParser<User>
             //writing document into the file
             writeDocument(document, userFileName(object));
         }
-        catch (TransformerException e)
+        catch (UserExistException e)
+        {
+            throw new UserExistException();
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             logger.fatal(e);
-            throw new UserCreatingException();
-        }
-        catch (IOException ex)
-        {
-            ex.printStackTrace();
-            logger.fatal(ex);
-            throw new UserCreatingException();
-        }
-        catch (ParserConfigurationException exc)
-        {
-            exc.printStackTrace();
-            logger.fatal(exc);
-            throw new UserCreatingException();
+            throw new UserCreatingException(e);
         }
     }
 
