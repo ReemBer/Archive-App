@@ -21,7 +21,8 @@ import java.io.FileReader;
  */
 public class PersonStAXParser extends XmlParser<Person>
 {
-    private static final String XSDSchema = "";
+    private static final String prefix = "D:\\WORKSPACE\\Archive\\src\\Server\\Persons\\";
+    private static final String XSDSchema = prefix + "PersonValidSchema.xsd";
 
     private PersonStAXHandler handler;
 

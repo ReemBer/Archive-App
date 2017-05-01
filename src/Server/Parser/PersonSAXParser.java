@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 public class PersonSAXParser extends XmlParser<Person>
 {
-    private static final String XSDSchema = "PersonValidSchema.xsd";
+    private static final String XSDSchema = "D:\\WORKSPACE\\Archive\\src\\Server\\Persons\\PersonValidSchema.xsd";
     private PersonHandler handler = new PersonHandler();
 
     public static final Logger logger = Logger.getLogger(PersonSAXParser.class);

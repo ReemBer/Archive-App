@@ -31,8 +31,8 @@ import java.io.IOException;
  */
 public class UserParser extends DOMXmlParser<User>
 {
-    private static final String XSDSchema = "UserValidSchema.xsd";
     private static final String prefix = "D:\\WORKSPACE\\Archive\\src\\Server\\Users\\";
+    private static final String XSDSchema = prefix + "UserValidSchema.xsd";
     private static final String suffix = ".xml";
 
     public static final Logger logger = Logger.getLogger(UserParser.class);

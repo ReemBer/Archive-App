@@ -34,9 +34,10 @@ import java.io.IOException;
  */
 public class PersonDOMParser extends DOMXmlParser<Person>
 {
-    private static final String XSDSchema = "PersonValidSchema.xsd";
     private static final String prefix = "D:\\WORKSPACE\\Archive\\src\\Server\\Persons\\";
     private static final String suffix = ".xml";
+
+    private static final String XSDSchema = prefix + "PersonValidSchema.xsd";
 
     public  static final Logger logger = Logger.getLogger(PersonDOMParser.class);
 
