@@ -2,6 +2,7 @@ package Answer;
 
 import PersonalData.Person;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Vector;
  * @author ReemBer
  * This class is used to send answer for a client
  */
-public class Answer
+public class Answer implements Serializable
 {
     private boolean legal;
     private boolean success;

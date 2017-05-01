@@ -3,13 +3,15 @@ package Request;
 import PersonalData.Person;
 import User.User;
 
+import java.io.Serializable;
+
 /**
  * Created by Tarasevich Vladislav on 26.04.2017.
  * @author ReemBer
  * This class is used to send a request to the server.
  * Each fields of this class can only be initialized (no edit)
  */
-public class Request
+public class Request implements Serializable
 {
     private final RequestType type;
 

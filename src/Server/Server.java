@@ -1,6 +1,11 @@
 package Server;
 
-import java.io.IOException;
+import Answer.Answer;
+import Request.Request;
+import Server.RequestHandler.RequestHandler;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,14 +22,23 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
 {
     private static final int port = 4242;
 
-    private byte accessLevel;
-    private Socket soket;
+    public static final Logger logger = Logger.getLogger(Server.class);
 
-    public Server(){}
+    private final RequestHandler requestHandler;
+
+    private Request request;
+    private Answer  answer;
+
+    private Socket socket;
+
+    public Server()
+    {
+        requestHandler = new RequestHandler();
+    }
 
     public void getStarted(Socket socket)
     {
-        this.soket = socket;
+        this.socket = socket;
         setDaemon(true);
         start();
     }
@@ -32,7 +46,28 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
     @Override
     public void run()
     {
+        try
+        {
+            InputStream  inputStream  = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
 
+            ObjectInputStream  objectInputStream  = new ObjectInputStream(inputStream);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
+            String line = null;
+
+            while (true)
+            {
+                request = (Request)objectInputStream.readObject();
+                answer  = requestHandler.process(request);
+                objectOutputStream.writeObject(answer);
+                objectOutputStream.flush();
+            }
+        }
+        catch(Exception e)
+        {
+            logger.error("FUCK", e);
+        }
     }
 
     public static void main(String args[])
@@ -57,12 +92,13 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
             }
             catch (UnknownHostException e)
             {
-                // TODO: 27.04.2017 Забацать обработку такого рода исключения
+                e.printStackTrace();
+                logger.fatal("Server is stopped",e);
             }
-            catch (IOException ex)
+            catch (IOException e)
             {
-                ex.printStackTrace();
-                // TODO: 27.04.2017 ...
+                e.printStackTrace();
+                logger.fatal("Server is stopped", e);
             }
         }
         finally
@@ -77,10 +113,10 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
             catch (IOException e)
             {
                 e.printStackTrace();
-                // TODO: 27.04.2017 ...
+                logger.fatal("Server working was ended", e);
             }
         }
-
+        logger.info("Server working was ended");
         System.exit(0);
     }
 }
