@@ -187,32 +187,13 @@ public class UserParser extends DOMXmlParser<User>
     }
 
     /**
-     * Checking File existing
-     * @param fileName checking file
-     * @return true, if such file exist
-     * @throws FileNotFoundException such file not found
-     * @throws NullPointerException fileName parameter is null pointer
-     */
-    private boolean exist(String fileName) throws FileNotFoundException, NullPointerException
-    {
-        if(fileName == null) throw new NullPointerException();
-
-        File file = new File(fileName);
-        if(!file.exists())
-        {
-            throw new FileNotFoundException();
-        }
-
-        return true;
-    }
-
-    /**
      * Checking valid of XML file, by using XSD Schema
      * @param xmlFile
      * @throws SAXException file does not match XSD Schema
      * @throws IOException some file error
      */
-    private void validate(String xmlFile) throws SAXException, IOException
+    @Override
+    protected void validate(String xmlFile) throws SAXException, IOException
     {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         Schema schema = factory.newSchema(new StreamSource(XSDSchema));
