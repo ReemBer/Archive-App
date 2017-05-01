@@ -2,9 +2,22 @@ package Server.Parser;
 
 import PersonalData.Address;
 import PersonalData.Person;
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by Tarasevich Vladislav on 01.05.2017.
@@ -12,16 +25,59 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class PersonSAXParser extends XmlParser<Person>
 {
-    PersonHandler handler = new PersonHandler();
+    private static final String XSDSchema = "PersonValidSchema.xsd";
+    private PersonHandler handler = new PersonHandler();
 
-    @Override
-    public Person parse(String xmlFile) throws Exception
+    public static final Logger logger = Logger.getLogger(PersonSAXParser.class);
+
+    public PersonSAXParser()
     {
-            
-        return null;
+        super(XSDSchema);
     }
+
+    /**
+     * Method, that parse the Person XML File and returns the User object
+     * @param xmlFile path to Person XML File
+     * @return Person object
+     * @throws PersonParsingException cannot use features, that provide parsing Person XML File
+     * @throws IllegalPersonXMLFormatException The Person XML File does not match pattern
+     */
+    @Override
+    public Person parse(String xmlFile) throws PersonParsingException, IllegalPersonXMLFormatException
+    {
+        try
+        {
+            //existence check
+            exist(xmlFile);
+
+            //valid check
+            validate(xmlFile);
+
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            File personXML = new File(xmlFile);
+            saxParser.parse(personXML, handler);
+            return handler.getPerson();
+        }
+        catch (SAXException e)
+        {
+            e.printStackTrace();
+            logger.fatal(e);
+            throw new IllegalPersonXMLFormatException(e);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            logger.fatal(e);
+            throw new PersonParsingException(e);
+        }
+    }
+
 }
 
+/**
+ * Handler, that manage parsing Person XML File
+ */
 class PersonHandler extends DefaultHandler
 {
     private String  firstName;
