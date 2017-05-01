@@ -1,6 +1,6 @@
 package Answer;
 
-import PersonalData.PersonalData;
+import PersonalData.Person;
 
 import java.util.Vector;
 
@@ -16,16 +16,16 @@ public class Answer
 
     private byte accessMask;
 
-    private Vector<PersonalData> personalData;
+    private Vector<Person> personalData;
 
     private Comments comment;
 
-    public Answer(boolean legal, boolean success, byte accessMask, Vector<PersonalData> personalData, Comments comment)
+    public Answer(boolean legal, boolean success, byte accessMask, Vector<Person> personalData, Comments comment)
     {
         this.legal = legal;
         this.success = success;
         this.accessMask = accessMask;
-        this.personalData = new Vector<PersonalData>(personalData);
+        this.personalData = new Vector<Person>(personalData);
         this.comment = comment;
     }
 
@@ -41,7 +41,7 @@ public class Answer
         return accessMask;
     }
 
-    public Vector<PersonalData> getPersonalData() {
+    public Vector<Person> getPersonalData() {
         return personalData;
     }
 

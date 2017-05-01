@@ -7,5 +7,5 @@ package Request;
  */
 public enum RequestType
 {
-    SIGNIN, SIGNUP, VIEW, EDIT, CREATE, DELETE, USER_EDIT, QUIT
+    SIGNIN, SIGNUP, VIEW, EDIT, CREATE, DELETE, USER_EDIT, USER_DELETE, QUIT
 }

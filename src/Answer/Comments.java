@@ -7,5 +7,5 @@ package Answer;
  */
 public enum Comments
 {
-    OK, SERVER_ERROR, ACCESS_ERROR, NO_EXIST
+    OK, SERVER_ERROR, ACCESS_ERROR, NO_EXIST, ALREADY_EXIST
 }
