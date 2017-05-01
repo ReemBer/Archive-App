@@ -5,6 +5,8 @@ package Server.Parser;
  */
 public class PersonExistException extends Exception
 {
+    public PersonExistException(){}
+
     public PersonExistException(Throwable cause)
     {
         super(cause);
