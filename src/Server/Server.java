@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import static Request.RequestType.QUIT;
+
 /**
  * Created by ReemBer on 24.04.2017.
  * @author ReemBer
@@ -59,6 +61,7 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
             while (true)
             {
                 request = (Request)objectInputStream.readObject();
+                if(request.getType() == QUIT) break;
                 answer  = requestHandler.process(request);
                 objectOutputStream.writeObject(answer);
                 objectOutputStream.flush();
@@ -66,7 +69,7 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
         }
         catch(Exception e)
         {
-            logger.error("FUCK", e);
+            logger.error("FUCK : ", e);
         }
     }
 

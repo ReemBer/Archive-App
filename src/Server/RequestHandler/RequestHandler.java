@@ -91,6 +91,12 @@ public class RequestHandler
                     userHandler.delete(request.getFirstUser());
                     return new Answer(true,true,(byte)0, null, Comments.OK);
                 }
+                case CHANGE_PARSER:
+                {
+                    if(!((access & USER_EDIT) == USER_EDIT)) throw new IllegalAccessException();
+                    personHandler.setParserType(request.getParserType());
+                    return new Answer(true,true, (byte)0, null, Comments.OK);
+                }
                 default:
                 {
                     logger.info("Access checking success");
@@ -135,7 +141,7 @@ public class RequestHandler
         catch (UserParsingException e)
         {
             logger.fatal(e);
-            return new Answer(true,false,(byte)0, null, Comments.SERVER_ERROR);
+            return new Answer(true,false,(byte)0, null, Comments.NO_EXIST);
         }
         catch (IllegalUserXMLFormatException e)
         {
