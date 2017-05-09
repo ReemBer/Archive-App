@@ -1,11 +1,13 @@
 package PersonalData;
 
+import java.io.Serializable;
+
 /**
  * Created by Tarasevich Vladislav on 25.04.2017.
  * @author ReemBer (GitHub)
  * This class is designed to create and store personal data
  */
-public class Person
+public class Person implements Serializable
 {
     private static final String DEFAULT_STRING_VALUE = "NO DATA";
     private static final int DEFAULT_INTEGER_VALUE   = 0;

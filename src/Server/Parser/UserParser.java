@@ -1,5 +1,6 @@
 package Server.Parser;
 
+import PersonalData.Person;
 import User.User;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 
 /**
@@ -104,6 +106,33 @@ public class UserParser extends DOMXmlParser<User>
         return result;
     }
 
+    public Vector<User> getUsers()
+    {
+        Vector<User> users = new Vector<>();
+
+        File folder = new File(prefix);
+
+
+        String[] fileNames = folder.list((dir, name) -> name.endsWith(suffix));
+
+        for(String fileName : fileNames)
+        {
+            User user;
+            try
+            {
+                user = parse(prefix + fileName);
+                users.add(user);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                logger.error(e);
+            }
+        }
+
+        return users;
+    }
+
     /**
      * Creating new User XML File
      * @param object A User object, that will be writing in the XML file
@@ -117,9 +146,12 @@ public class UserParser extends DOMXmlParser<User>
         {
             if(object == null) throw new NullPointerException();
 
-            //cannot create new user -- such user already exist
-            if(exist(userFileName(object))) throw new UserExistException();
-
+            try
+            {
+                //cannot create new user -- such user already exist
+                if (exist(userFileName(object))) throw new UserExistException();
+            }
+            catch (FileNotFoundException e){}
             //creating new xml document
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -178,17 +210,8 @@ public class UserParser extends DOMXmlParser<User>
     @Override
     public void delete(User object)
     {
-        try
-        {
-            exist(userFileName(object));
-
             File del = new File(userFileName(object));
             del.delete();
-        }
-        catch (FileNotFoundException e)
-        {
-            logger.info("Trying to delete no existence file");
-        }
     }
 
     /**
@@ -200,7 +223,7 @@ public class UserParser extends DOMXmlParser<User>
     @Override
     protected void validate(String xmlFile) throws SAXException, IOException
     {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new StreamSource(XSDSchema));
         Validator validator = schema.newValidator();
         StreamSource streamSource = new StreamSource(xmlFile);

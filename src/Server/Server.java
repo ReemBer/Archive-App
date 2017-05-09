@@ -6,10 +6,7 @@ import Server.RequestHandler.RequestHandler;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 import static Request.RequestType.QUIT;
 
@@ -61,11 +58,20 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
             while (true)
             {
                 request = (Request)objectInputStream.readObject();
+
+                System.out.println(request.getType() + "\n" + request.getUserName() + "\n" + request.getPassword());
+
+
                 if(request.getType() == QUIT) break;
                 answer  = requestHandler.process(request);
                 objectOutputStream.writeObject(answer);
+                sleep(1000);
                 objectOutputStream.flush();
             }
+        }
+        catch (SocketException e)
+        {
+            logger.info("The Client disconnected from the server.");
         }
         catch(Exception e)
         {
@@ -86,17 +92,13 @@ public class Server extends Thread // TODO: 27.04.2017 Добавить логи
 
                 while (true)
                 {
+                    System.out.println("WAITING...");
                     //Waiting for connection
                     Socket socket = serverSocket.accept();
-
+                    System.out.println("CONNECTED.");
                     //Start processing client requests in a separate thread
                     new Server().getStarted(socket);
                 }
-            }
-            catch (UnknownHostException e)
-            {
-                e.printStackTrace();
-                logger.fatal("Server is stopped",e);
             }
             catch (IOException e)
             {

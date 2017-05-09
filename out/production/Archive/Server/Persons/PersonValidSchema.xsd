@@ -8,14 +8,14 @@
                 <xs:element name="email">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value="^([0-9a-zA-Z]+\.[0-9a-zA-Z]+@(g?)mail\.(com|ru|by|net))$" />
+                            <!--<xs:pattern value="^([0-9a-zA-Z]+\.[0-9a-zA-Z]+\.[0-9a-zA-Z]+@(g?)mail\.(com|ru|by|net))$" />-->
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
                 <xs:element name="phoneNumber" >
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value="^(\+[0-9]{12})$" />
+                            <!--<xs:pattern value="^(\+[0-9]{12})$" />-->
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>

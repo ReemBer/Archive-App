@@ -1,11 +1,13 @@
 package PersonalData;
 
+import java.io.Serializable;
+
 /**
  * Created by Tarasevich Vladislav on 25.04.2017.
  * @author name ReemBer
  * This class is used to storing home address of some Person.
  */
-public class Address
+public class Address implements Serializable
 {
     private final String DEFAULT_STRING_VALUE  = "NO DATA";
     private final int    DEFAULT_INTEGER_VALUE = -1;
