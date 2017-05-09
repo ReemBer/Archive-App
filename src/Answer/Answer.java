@@ -1,6 +1,7 @@
 package Answer;
 
 import PersonalData.Person;
+import User.User;
 
 import java.io.Serializable;
 import java.util.Vector;
@@ -19,14 +20,40 @@ public class Answer implements Serializable
 
     private Vector<Person> personalData;
 
+    private Vector<User>   users;
+
     private Comments comment;
 
-    public Answer(boolean legal, boolean success, byte accessMask, Vector<Person> personalData, Comments comment)
+    public Answer()
     {
+        legal = false;
+        success = false;
+        accessMask = 0;
+        users = null;
+        comment = Comments.OK;
+    }
+
+    public void setLegal(boolean legal) {
         this.legal = legal;
+    }
+
+    public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public void setAccessMask(byte accessMask) {
         this.accessMask = accessMask;
-        this.personalData = new Vector<Person>(personalData);
+    }
+
+    public void setPersonalData(Vector<Person> personalData) {
+        this.personalData = personalData;
+    }
+
+    public void setUsers(Vector<User> users) {
+        this.users = users;
+    }
+
+    public void setComment(Comments comment) {
         this.comment = comment;
     }
 
@@ -44,6 +71,10 @@ public class Answer implements Serializable
 
     public Vector<Person> getPersonalData() {
         return personalData;
+    }
+
+    public Vector<User> getUsers() {
+        return users;
     }
 
     public Comments getComment() {

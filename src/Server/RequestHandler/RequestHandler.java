@@ -8,11 +8,11 @@ import Server.PersonManager.PersonManager;
 import User.AccessMask;
 import User.User;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Comment;
 
 import java.util.Vector;
 
 import static User.AccessMask.USER_EDIT;
+import static User.AccessMask.USER_VIEW;
 
 
 /**
@@ -27,6 +27,8 @@ public class RequestHandler
     private UserParser    userHandler;
     private PersonManager personHandler;
 
+    private Answer answer = null;
+
     public static final Logger logger = Logger.getLogger(RequestHandler.class);
 
     public RequestHandler()
@@ -37,6 +39,15 @@ public class RequestHandler
 
     public Answer process(Request request)
     {
+        Answer answer;
+        answer = new Answer();
+        answer.setLegal(true);
+        answer.setSuccess(false);
+        answer.setAccessMask((byte)0);
+        answer.setPersonalData(null);
+        answer.setUsers(null);
+        answer.setComment(Comments.SERVER_ERROR);
+
         try {
             byte access = request.getAccessMask();
             switch (request.getType())
@@ -46,50 +57,146 @@ public class RequestHandler
                     if (!((access & AccessMask.VIEW) == AccessMask.VIEW)) throw new IllegalAccessException();
                     Vector<Person> personVector = personHandler.getAllPersons();
 
-                    return new Answer(true,true, access,  personVector, Comments.OK);
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(personVector);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case EDIT:
                 {
                     if (!((access & AccessMask.EDIT) == AccessMask.EDIT)) throw new IllegalAccessException();
                     personHandler.editPerson(request.getFirst(), request.getSecond());
                     Vector<Person> personVector = personHandler.getAllPersons();
-                    return new Answer(true,true, (byte)0, personVector, Comments.OK);
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(personVector);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case CREATE:
                 {
                     if (!((access & AccessMask.CREATE) == AccessMask.CREATE)) throw new IllegalAccessException();
                     personHandler.createNewPerson(request.getFirst());
                     Vector<Person> personVector = personHandler.getAllPersons();
-                    return new Answer(true,true, (byte)0, personVector, Comments.OK);
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(personVector);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case DELETE:
                 {
                     if (!((access & AccessMask.DELETE) == AccessMask.DELETE)) throw new IllegalAccessException();
                     personHandler.deletePerson(request.getFirst());
                     Vector<Person> personVector = personHandler.getAllPersons();
-                    return new Answer(true,true, (byte)0, personVector, Comments.OK);
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(personVector);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case USER_EDIT:
                 {
                     if (!((access & USER_EDIT) == USER_EDIT)) throw new IllegalAccessException();
                     userHandler.edit(request.getFirstUser(), request.getSecondUser());
-                    return new Answer(true,true, request.getSecondUser().getAccess(), null, Comments.OK);
+                    Vector<User> userVector = userHandler.getUsers();
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(null);
+                    answer.setUsers(userVector);
+                    answer.setComment(Comments.OK);
+                    return answer;
+                }
+                case USER_VIEW:
+                {
+                    if(!((access & USER_VIEW) == USER_VIEW)) throw new IllegalAccessException();
+
+                    Vector<User> userVector = userHandler.getUsers();
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(null);
+                    answer.setUsers(userVector);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case SIGNIN:
                 {
                     User user = userHandler.parse(prefix + request.getUserName() + suffix);
-                    return new Answer(true,true, user.getAccess(), null, Comments.OK);
+
+                    if(!(user.getPassword().equals(request.getPassword()))) throw new UserExistException();
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask(user.getAccess());
+                    answer.setPersonalData(null);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case SIGNUP:
                 {
                     userHandler.create(request.getFirstUser());
-                    return new Answer(true,true, (byte)0, null, Comments.OK);
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(null);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 case USER_DELETE:
                 {
                     if(!((access & USER_EDIT) == USER_EDIT)) throw new IllegalAccessException();
                     userHandler.delete(request.getFirstUser());
-                    return new Answer(true,true,(byte)0, null, Comments.OK);
+                    Vector<User> userVector = userHandler.getUsers();
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(null);
+                    answer.setUsers(userVector);
+                    answer.setComment(Comments.OK);
+                    return answer;
+                }
+                case CHANGE_PARSER:
+                {
+                    if(!((access & USER_EDIT) == USER_EDIT)) throw new IllegalAccessException();
+                    personHandler.setParserType(request.getParserType());
+
+                    answer = new Answer();
+                    answer.setLegal(true);
+                    answer.setSuccess(true);
+                    answer.setAccessMask((byte)0);
+                    answer.setPersonalData(null);
+                    answer.setUsers(null);
+                    answer.setComment(Comments.OK);
+                    return answer;
                 }
                 default:
                 {
@@ -110,7 +217,15 @@ public class RequestHandler
         catch (PersonExistException e)
         {
             logger.error(e);
-            return new Answer(true, false, (byte)0, null, Comments.ALREADY_EXIST);
+
+            answer = new Answer();
+            answer.setLegal(true);
+            answer.setSuccess(false);
+            answer.setAccessMask((byte)0);
+            answer.setPersonalData(null);
+            answer.setUsers(null);
+            answer.setComment(Comments.ALREADY_EXIST);
+            return answer;
         }
         catch (UserExistException e)
         {
@@ -123,35 +238,88 @@ public class RequestHandler
             catch (UserCreatingException ex)
             {
                 logger.fatal(ex);
-                return new Answer(true,false, (byte)0, null, Comments.SERVER_ERROR);
+
+                answer = new Answer();
+                answer.setLegal(true);
+                answer.setSuccess(false);
+                answer.setAccessMask((byte)0);
+                answer.setPersonalData(null);
+                answer.setUsers(null);
+                answer.setComment(Comments.SERVER_ERROR);
+                return answer;
             }
-            return new Answer(true,false, (byte)0, null, Comments.ALREADY_EXIST);
+
+            answer = new Answer();
+            answer.setLegal(true);
+            answer.setSuccess(false);
+            answer.setAccessMask((byte)0);
+            answer.setPersonalData(null);
+            answer.setUsers(null);
+            answer.setComment(Comments.ALREADY_EXIST);
+            return answer;
         }
         catch (UserCreatingException e)
         {
             logger.fatal(e);
-            return new Answer(true,false, (byte)0, null, Comments.SERVER_ERROR);
+
+            answer = new Answer();
+            answer.setLegal(true);
+            answer.setSuccess(false);
+            answer.setAccessMask((byte)0);
+            answer.setPersonalData(null);
+            answer.setUsers(null);
+            answer.setComment(Comments.SERVER_ERROR);
+            return answer;
         }
         catch (UserParsingException e)
         {
             logger.fatal(e);
-            return new Answer(true,false,(byte)0, null, Comments.SERVER_ERROR);
+
+            answer = new Answer();
+            answer.setLegal(true);
+            answer.setSuccess(false);
+            answer.setAccessMask((byte)0);
+            answer.setPersonalData(null);
+            answer.setUsers(null);
+            answer.setComment(Comments.NO_EXIST);
+            return answer;
         }
         catch (IllegalUserXMLFormatException e)
         {
             logger.fatal(e);
-            return new Answer(true,false, (byte)0, null, Comments.SERVER_ERROR);
+            answer = new Answer();
+            answer.setLegal(true);
+            answer.setSuccess(false);
+            answer.setAccessMask((byte)0);
+            answer.setPersonalData(null);
+            answer.setUsers(null);
+            answer.setComment(Comments.SERVER_ERROR);
+            return answer;
         }
-        return null;
+        return answer;
     }
 
     private Answer generateIllegalAccessAnswer()
     {
-        return new Answer(false, false, (byte)0, null, Comments.ACCESS_ERROR);
+        answer = new Answer();
+        answer.setLegal(false);
+        answer.setSuccess(false);
+        answer.setAccessMask((byte)0);
+        answer.setPersonalData(null);
+        answer.setUsers(null);
+        answer.setComment(Comments.ACCESS_ERROR);
+        return answer;
     }
 
     private Answer generateServerErrorAnswer()
     {
-        return new Answer(true, false, (byte)0, null, Comments.SERVER_ERROR);
+        answer = new Answer();
+        answer.setLegal(false);
+        answer.setSuccess(false);
+        answer.setAccessMask((byte)0);
+        answer.setPersonalData(null);
+        answer.setUsers(null);
+        answer.setComment(Comments.SERVER_ERROR);
+        return answer;
     }
 }

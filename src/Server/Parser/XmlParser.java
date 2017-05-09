@@ -36,7 +36,7 @@ public abstract class XmlParser<PatternType>
      */
     protected void validate(String xmlFile) throws SAXException, IOException
     {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema(new StreamSource(XSDSchema));
         Validator validator = schema.newValidator();
         StreamSource streamSource = new StreamSource(xmlFile);
@@ -59,7 +59,7 @@ public abstract class XmlParser<PatternType>
         {
             throw new FileNotFoundException();
         }
-
+        file = null;
         return true;
     }
 }

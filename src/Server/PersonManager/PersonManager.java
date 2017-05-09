@@ -68,19 +68,14 @@ public class PersonManager
         File folder = new File(prefix);
 
 
-        String[] fileNames = folder.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(suffix);
-            }
-        });
+        String[] fileNames = folder.list((dir, name) -> name.endsWith(suffix));
 
         for(String fileName : fileNames)
         {
             Person person;
             try
             {
-                person = reader.parse(fileName);
+                person = reader.parse(prefix + fileName);
                 persons.add(person);
             }
             catch (Exception e)

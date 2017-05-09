@@ -1,11 +1,13 @@
 package User;
 
+import java.io.Serializable;
+
 /**
  * Created by Tarasevich vladislav on 26.04.2017.
  * @author Reember
  * This class is used to represent the user in the program
  */
-public class User
+public class User implements Serializable
 {
     private static final String DEFAULT_NAME = "NO NAME";
     private static final byte DEFAULT_ACCESS = 0x00000000b;

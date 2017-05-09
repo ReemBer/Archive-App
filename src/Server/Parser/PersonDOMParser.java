@@ -223,6 +223,7 @@ public class PersonDOMParser extends DOMXmlParser<Person>
     public void edit(Person oldObject, Person newObject)
             throws PersonCreatingException, PersonExistException
     {
+
         delete(oldObject);
         create(newObject);
     }
@@ -234,17 +235,8 @@ public class PersonDOMParser extends DOMXmlParser<Person>
     @Override
     public void delete(Person object)
     {
-        try
-        {
-            exist(personFileName(object));
-
             File del = new File(personFileName(object));
             del.delete();
-        }
-        catch (FileNotFoundException e)
-        {
-            logger.info("Trying to delete no existence file");
-        }
     }
 
 
