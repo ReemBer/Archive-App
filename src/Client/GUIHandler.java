@@ -347,130 +347,7 @@ public class GUIHandler
 
         // Размещение кнопок в панели pnlButtons
         pnlButtons.setLayout(new FillLayout());
-        Button updatePersonButton = new Button(pnlButtons, SWT.PUSH);
-        updatePersonButton.setText("Update Persons");
-        if((currentUser.getAccess() & VIEW) == VIEW)
-        {
-            updatePersonButton.setEnabled(true);
-        }
-        else updatePersonButton.setEnabled(false);
-        updatePersonButton.addListener(SWT.PUSH, event -> {
-            Toolkit.getDefaultToolkit().beep();
-            answer = clientHandler.getPersons();
-            personViewer.removeAll();
-            for(Person person : answer.getPersonalData())
-            {
-                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
-            }
-        });
 
-
-        Button addPersonButton = new Button(pnlButtons, SWT.PUSH);
-        addPersonButton.setText("Add Person");
-        if((currentUser.getAccess()&CREATE) == CREATE)
-        {
-            addPersonButton.setEnabled(true);
-        }
-        else addPersonButton.setEnabled(false);
-        addPersonButton.addListener(SWT.PUSH, event -> {
-            Toolkit.getDefaultToolkit().beep();
-            Person person1 = getPersonInformation();
-            answer = clientHandler.createPerson(person1);
-            personViewer.removeAll();
-            for(Person person : answer.getPersonalData())
-            {
-                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
-            }
-        });
-
-
-        Button editPersonButton = new Button(pnlButtons, SWT.PUSH);
-        editPersonButton.setText("Edit Person");
-        if((currentUser.getAccess()&EDIT) == EDIT)
-        {
-            editPersonButton.setEnabled(true);
-        }
-        else editPersonButton.setEnabled(false);
-        editPersonButton.addListener(SWT.PUSH, event -> {
-            Toolkit.getDefaultToolkit().beep();
-            Person oldPerson = clientHandler.getPersonAt(personViewer.getSelectionIndex());
-            Person newPerson = getPersonInformation();
-            Answer  answer = clientHandler.editPerson(oldPerson, newPerson);
-            personViewer.removeAll();
-            for(Person person : answer.getPersonalData())
-            {
-                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
-            }
-        });
-
-        Button deletePersonButton = new Button(pnlButtons, SWT.PUSH);
-        deletePersonButton.setText("Delete Person");
-        if((currentUser.getAccess()&DELETE) == DELETE)
-        {
-            deletePersonButton.setEnabled(true);
-        }
-        else deletePersonButton.setEnabled(false);
-        deletePersonButton.addListener(SWT.PUSH, event -> {
-            Toolkit.getDefaultToolkit().beep();
-            answer = clientHandler.deletePerson(clientHandler.getPersonAt(personViewer.getSelectionIndex()));
-            personViewer.removeAll();
-            for(Person person : answer.getPersonalData())
-            {
-                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
-            }
-        });
-
-
-        Button updateUserButton = new Button(pnlButtons, SWT.PUSH);
-        updateUserButton.setText("Update Users");
-        if((currentUser.getAccess()&USER_VIEW) == USER_VIEW)
-        {
-            updateUserButton.setEnabled(true);
-        }
-        else updateUserButton.setEnabled(false);
-        updateUserButton.addListener(SWT.PUSH, event -> {
-            Toolkit.getDefaultToolkit().beep();
-            answer = clientHandler.getUsers();
-            userViewer.removeAll();
-            for(User user : answer.getUsers())
-            {
-                userViewer.add(user.getName());
-            }
-        });
-
-
-        Button editUserButton  = new Button(pnlButtons, SWT.PUSH);
-        editUserButton.setText("Edit User");
-        if((currentUser.getAccess()&USER_EDIT) == USER_EDIT)
-        {
-            editUserButton.setEnabled(true);
-        }
-        else editUserButton.setEnabled(false);
-        editUserButton.addListener(SWT.PUSH, event -> {
-            answer = clientHandler.editUser(clientHandler.getUserAt(userViewer.getSelectionIndex()), getUserInformation());
-            userViewer.removeAll();
-            for(User user : answer.getUsers())
-            {
-                userViewer.add(user.getName());
-            }
-        });
-
-
-        Button deleteUserButton = new Button(pnlButtons, SWT.PUSH);
-        deleteUserButton.setText("Delete User");
-        if((currentUser.getAccess()&USER_DELETE) == USER_DELETE)
-        {
-            deleteUserButton.setEnabled(true);
-        }
-        else deleteUserButton.setEnabled(false);
-        deleteUserButton.addListener(SWT.PUSH, event -> {
-            answer = clientHandler.deleteUser(clientHandler.getUserAt(userViewer.getSelectionIndex()));
-            userViewer.removeAll();
-            for(User user : answer.getUsers())
-            {
-                userViewer.add(user.getName());
-            }
-        });
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void createPanelCenter(Composite parent)
@@ -503,9 +380,10 @@ public class GUIHandler
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void createBodyLeft(Composite parent)
     {
+        User currentUser = clientHandler.getCurrentUser();
+
         Composite composite = new Composite(parent, SWT.BORDER);
         composite.setLayout(new GridLayout());
-
 
         Composite forInformationLabel = new Composite(composite, SWT.BORDER);
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -526,15 +404,71 @@ public class GUIHandler
         forInformationText.setLayout(new GridLayout());
         userInformation = prepareUserInformation(forInformationText, clientHandler.getCurrentUser());
 
+        Button editUserButton  = new Button(userInformation, SWT.PUSH);
+        editUserButton.setText("Edit User");
+        if((currentUser.getAccess()&USER_EDIT) == USER_EDIT)
+        {
+            Toolkit.getDefaultToolkit().beep();
+            editUserButton.setEnabled(true);
+        }
+        else editUserButton.setEnabled(false);
+        editUserButton.addListener(SWT.PUSH, event -> {
+            answer = clientHandler.editUser(clientHandler.getUserAt(userViewer.getSelectionIndex()), getUserInformation());
+            userViewer.removeAll();
+            for(User user : answer.getUsers())
+            {
+                userViewer.add(user.getName());
+            }
+        });
+
+
         forPersonText = new Composite(sashForm, SWT.BORDER);
         gridData1 = new GridData(GridData.FILL_BOTH);
         forPersonText.setLayoutData(gridData1);
         forPersonText.setLayout(new GridLayout());
         personInformation = preparePersonInformation(forPersonText);
+
+        Button addPersonButton = new Button(forPersonText, SWT.PUSH);
+        addPersonButton.setText("Add Person");
+        if((currentUser.getAccess()&CREATE) == CREATE)
+        {
+            addPersonButton.setEnabled(true);
+        }
+        else addPersonButton.setEnabled(false);
+        addPersonButton.addListener(SWT.PUSH, event -> {
+            Toolkit.getDefaultToolkit().beep();
+            Person person1 = getPersonInformation();
+            answer = clientHandler.createPerson(person1);
+            personViewer.removeAll();
+            for(Person person : answer.getPersonalData())
+            {
+                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
+            }
+        });
+
+        Button editPersonButton = new Button(forPersonText, SWT.PUSH);
+        editPersonButton.setText("Edit Person");
+        if((currentUser.getAccess()&EDIT) == EDIT)
+        {
+            editPersonButton.setEnabled(true);
+        }
+        else editPersonButton.setEnabled(false);
+        editPersonButton.addListener(SWT.PUSH, event -> {
+            Toolkit.getDefaultToolkit().beep();
+            Person oldPerson = clientHandler.getPersonAt(personViewer.getSelectionIndex());
+            Person newPerson = getPersonInformation();
+            Answer  answer = clientHandler.editPerson(oldPerson, newPerson);
+            personViewer.removeAll();
+            for(Person person : answer.getPersonalData())
+            {
+                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
+            }
+        });
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void createBodyRight(Composite parent)
     {
+        User currentUser = clientHandler.getCurrentUser();
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FillLayout());
 
@@ -555,6 +489,45 @@ public class GUIHandler
         forPersonLabel.setLayoutData(gridData1);
         forPersonLabel.setLayout(new FillLayout());
         new Label(forPersonLabel, SWT.CENTER).setText("Personal Data");
+
+        Composite forButtons = new Composite(comp2_left, SWT.NONE);
+        gridData1 = new GridData(GridData.FILL_HORIZONTAL);
+        forButtons.setLayoutData(gridData1);
+        forButtons.setLayout(new FillLayout());
+
+        Button updatePersonButton = new Button(forButtons, SWT.PUSH);
+        updatePersonButton.setText("Update Persons");
+        if((currentUser.getAccess() & VIEW) == VIEW)
+        {
+            updatePersonButton.setEnabled(true);
+        }
+        else updatePersonButton.setEnabled(false);
+        updatePersonButton.addListener(SWT.PUSH, event -> {
+            Toolkit.getDefaultToolkit().beep();
+            answer = clientHandler.getPersons();
+            personViewer.removeAll();
+            for(Person person : answer.getPersonalData())
+            {
+                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
+            }
+        });
+
+        Button deletePersonButton = new Button(forButtons, SWT.PUSH);
+        deletePersonButton.setText("Delete Person");
+        if((currentUser.getAccess()&DELETE) == DELETE)
+        {
+            deletePersonButton.setEnabled(true);
+        }
+        else deletePersonButton.setEnabled(false);
+        deletePersonButton.addListener(SWT.PUSH, event -> {
+            Toolkit.getDefaultToolkit().beep();
+            answer = clientHandler.deletePerson(clientHandler.getPersonAt(personViewer.getSelectionIndex()));
+            personViewer.removeAll();
+            for(Person person : answer.getPersonalData())
+            {
+                personViewer.add(person.getFirstName() + ' ' + person.getLastName());
+            }
+        });
 
         Composite forPersonList = new Composite(comp2_left, SWT.NONE);
         GridData gridData2 = new GridData(GridData.FILL_HORIZONTAL|GridData.FILL_VERTICAL);
@@ -578,6 +551,46 @@ public class GUIHandler
         forUserLabel.setLayoutData(gridData3);
         forUserLabel.setLayout(new FillLayout());
         new Label(forUserLabel, SWT.CENTER).setText("Users");
+
+        forButtons = new Composite(comp2_right, SWT.NONE);
+        gridData = new GridData(GridData.FILL_HORIZONTAL);
+        forButtons.setLayoutData(gridData);
+        forButtons.setLayout(new FillLayout());
+
+        Button updateUserButton = new Button(forButtons, SWT.PUSH);
+        updateUserButton.setText("Update Users");
+        if((currentUser.getAccess()&USER_VIEW) == USER_VIEW)
+        {
+            updateUserButton.setEnabled(true);
+        }
+        else updateUserButton.setEnabled(false);
+        updateUserButton.addListener(SWT.PUSH, event -> {
+            Toolkit.getDefaultToolkit().beep();
+            answer = clientHandler.getUsers();
+            userViewer.removeAll();
+            for(User user : answer.getUsers())
+            {
+                userViewer.add(user.getName());
+            }
+        });
+
+
+        Button deleteUserButton = new Button(forButtons, SWT.PUSH);
+        deleteUserButton.setText("Delete User");
+        if((currentUser.getAccess()&USER_DELETE) == USER_DELETE)
+        {
+            deleteUserButton.setEnabled(true);
+        }
+        else deleteUserButton.setEnabled(false);
+        deleteUserButton.addListener(SWT.PUSH, event -> {
+            answer = clientHandler.deleteUser(clientHandler.getUserAt(userViewer.getSelectionIndex()));
+            userViewer.removeAll();
+            for(User user : answer.getUsers())
+            {
+                userViewer.add(user.getName());
+            }
+        });
+
 
         Composite forUserList = new Composite(comp2_right, SWT.NONE);
         GridData gridData4 = new GridData(GridData.FILL_BOTH);

@@ -23,10 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by Tarasevich Vladislav on 01.05.2017.
@@ -213,7 +210,7 @@ public class PersonDOMParser extends DOMXmlParser<Person>
     }
 
     /**
-     * Deliting old Person XML File and creating new User XML File
+     * Deleting old Person XML File and creating new User XML File
      * @param oldObject will be deleted
      * @param newObject will be created
      * @throws PersonCreatingException cannot use the XML Creating Features
@@ -223,7 +220,6 @@ public class PersonDOMParser extends DOMXmlParser<Person>
     public void edit(Person oldObject, Person newObject)
             throws PersonCreatingException, PersonExistException
     {
-
         delete(oldObject);
         create(newObject);
     }
@@ -259,15 +255,18 @@ public class PersonDOMParser extends DOMXmlParser<Person>
      * @throws TransformerException
      */
     private void writeDocument(Document document, final String filePath)
-            throws TransformerFactoryConfigurationError, IOException, TransformerException
+            throws TransformerFactoryConfigurationError, IOException, TransformerException, PersonCreatingException
     {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         DOMSource source = new DOMSource(document);
         File outFile = new File(filePath);
-        outFile.createNewFile();
+        boolean newFile = outFile.createNewFile();
+        if(!newFile) throw new PersonCreatingException(new FileNotFoundException(outFile.getName()));
         FileOutputStream out = new FileOutputStream(outFile);
 
         StreamResult result = new StreamResult(out);
         transformer.transform(source, result);
+
+        out.close();
     }
 }

@@ -264,5 +264,6 @@ public class UserParser extends DOMXmlParser<User>
 
         StreamResult result = new StreamResult(out);
         transformer.transform(source, result);
+        out.close();
     }
 }
